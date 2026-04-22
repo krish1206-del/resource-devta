@@ -16,7 +16,7 @@ class _DashboardShellState extends State<DashboardShell> {
 
   @override
   Widget build(BuildContext context) {
-    final pages = const [
+    const pages = [
       AnalyticsDashboardScreen(),
       PriorityListScreen(),
       SurveyArchitectScreen(),

@@ -199,7 +199,7 @@ class _SurveyArchitectScreenState extends ConsumerState<SurveyArchitectScreen> {
                   ),
                   const SizedBox(height: 12),
                   DropdownButtonFormField<FieldType>(
-                    value: _newFieldType,
+                    initialValue: _newFieldType,
                     decoration: const InputDecoration(labelText: 'Field type'),
                     items: const [
                       DropdownMenuItem(value: FieldType.text, child: Text('Text')),
@@ -293,7 +293,7 @@ class _SurveyArchitectScreenState extends ConsumerState<SurveyArchitectScreen> {
         );
       case FieldType.select:
         return DropdownButtonFormField<String>(
-          value: (_answers[f.id] as String?),
+          initialValue: (_answers[f.id] as String?),
           decoration: const InputDecoration(hintText: 'Choose'),
           items: [
             for (final o in f.options) DropdownMenuItem(value: o, child: Text(o)),

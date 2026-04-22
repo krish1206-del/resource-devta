@@ -21,7 +21,7 @@ class _VolunteerShellState extends ConsumerState<VolunteerShell> {
     // Ensure location sync runs while on volunteer shell.
     ref.watch(locationSyncProvider);
 
-    final pages = const [
+    const pages = [
       TaskMarketplaceScreen(),
       MyAssignmentsScreen(),
       VolunteerProfileScreen(),

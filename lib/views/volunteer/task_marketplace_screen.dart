@@ -15,9 +15,9 @@ class TaskMarketplaceScreen extends ConsumerWidget {
       data: (matched) {
         return CustomScrollView(
           slivers: [
-            SliverAppBar(
+            const SliverAppBar(
               pinned: true,
-              title: const Text('Task marketplace'),
+              title: Text('Task marketplace'),
             ),
             SliverToBoxAdapter(
               child: Padding(
