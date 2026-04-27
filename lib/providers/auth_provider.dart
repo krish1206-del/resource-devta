@@ -15,6 +15,13 @@ final authProvider = ChangeNotifierProvider<AuthState>((ref) {
 
 class AuthState extends ChangeNotifier {
   AuthState() {
+    if (!AppSupabase.isInitialized) {
+      _session = null;
+      _user = null;
+      _role = AppRole.volunteer;
+      return;
+    }
+
     _session = AppSupabase.client.auth.currentSession;
     
     _authSub = AppSupabase.client.auth.onAuthStateChange.listen((authData) async {
@@ -45,6 +52,7 @@ class AuthState extends ChangeNotifier {
   AppRole? get role => _role;
 
   Future<void> refreshProfile() async {
+    if (!AppSupabase.isInitialized) return;
     final uid = _session?.user.id;
     if (uid == null) return;
 
@@ -76,6 +84,9 @@ class AuthState extends ChangeNotifier {
     required String email,
     required String password,
   }) async {
+    if (!AppSupabase.isInitialized) {
+      throw StateError('Supabase is not configured. Add keys to .env.');
+    }
     await AppSupabase.client.auth.signInWithPassword(
       email: email,
       password: password,
@@ -87,6 +98,9 @@ class AuthState extends ChangeNotifier {
     required String password,
     required String fullName,
   }) async {
+    if (!AppSupabase.isInitialized) {
+      throw StateError('Supabase is not configured. Add keys to .env.');
+    }
     final res = await AppSupabase.client.auth.signUp(
       email: email,
       password: password,
@@ -106,6 +120,9 @@ class AuthState extends ChangeNotifier {
   }
 
   Future<void> signInWithGoogle() async {
+    if (!AppSupabase.isInitialized) {
+      throw StateError('Supabase is not configured. Add keys to .env.');
+    }
     final googleSignIn = GoogleSignIn(
       scopes: const ['email', 'profile'],
     );
@@ -125,6 +142,7 @@ class AuthState extends ChangeNotifier {
   }
 
   Future<void> signOut() async {
+    if (!AppSupabase.isInitialized) return;
     await AppSupabase.client.auth.signOut();
   }
 

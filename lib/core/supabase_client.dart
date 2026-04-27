@@ -2,6 +2,10 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AppSupabase {
+  static bool _initialized = false;
+
+  static bool get isInitialized => _initialized;
+
   static SupabaseClient get client => Supabase.instance.client;
 
   static Future<void> initialize() async {
@@ -9,10 +13,10 @@ class AppSupabase {
     final anonKey = dotenv.env['SUPABASE_ANON_KEY'];
 
     if (url == null || url.isEmpty || anonKey == null || anonKey.isEmpty) {
-      throw StateError(
-        'Missing SUPABASE_URL / SUPABASE_ANON_KEY in .env. '
-        'Copy .env.example to .env and fill values.',
-      );
+      // Allow the app to run as a UI prototype without backend credentials.
+      // Any features that require Supabase will fail later with clearer errors.
+      _initialized = false;
+      return;
     }
 
     await Supabase.initialize(
@@ -20,6 +24,7 @@ class AppSupabase {
       anonKey: anonKey,
       realtimeClientOptions: const RealtimeClientOptions(eventsPerSecond: 10),
     );
+    _initialized = true;
   }
 }
 

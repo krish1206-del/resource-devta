@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../core/supabase_client.dart';
 import '../providers/auth_provider.dart';
+import '../views/intro/intro_screen.dart';
+import '../views/prototype/prototype_shell.dart';
 import '../views/admin/admin_shell.dart';
 import '../views/auth/login_screen.dart';
 import '../views/auth/register_screen.dart';
@@ -11,6 +14,8 @@ import '../views/volunteer/volunteer_shell.dart';
 enum AppRole { volunteer, ngoAdmin }
 
 class AppRouter {
+  static const intro = '/';
+  static const prototype = '/prototype';
   static const login = '/login';
   static const register = '/register';
   static const volunteer = '/volunteer';
@@ -19,18 +24,29 @@ class AppRouter {
 
   static GoRouter build(AuthState auth) {
     return GoRouter(
-      initialLocation: login,
+      initialLocation: intro,
       refreshListenable: auth,
       redirect: (context, state) {
-        final isAuthed = auth.session != null;
-        final isAuthRoute =
-            state.matchedLocation == login || state.matchedLocation == register;
-
-        if (!isAuthed) {
-          return isAuthRoute ? null : login;
+        // Demo / prototype mode (no Supabase keys): keep the app navigable.
+        if (!AppSupabase.isInitialized) {
+          final ok = state.matchedLocation == intro ||
+              state.matchedLocation == prototype ||
+              state.matchedLocation == login ||
+              state.matchedLocation == register;
+          return ok ? null : prototype;
         }
 
-        if (isAuthRoute) {
+        final isAuthed = auth.session != null;
+        final isPublicRoute = state.matchedLocation == intro ||
+            state.matchedLocation == prototype ||
+            state.matchedLocation == login ||
+            state.matchedLocation == register;
+
+        if (!isAuthed) {
+          return isPublicRoute ? null : login;
+        }
+
+        if (isPublicRoute) {
           // Default landing: role based; fall back to volunteer shell.
           final role = auth.role;
           if (role == AppRole.ngoAdmin) return admin;
@@ -45,6 +61,14 @@ class AppRouter {
         return null;
       },
       routes: [
+        GoRoute(
+          path: intro,
+          builder: (context, state) => const IntroScreen(),
+        ),
+        GoRoute(
+          path: prototype,
+          builder: (context, state) => const PrototypeShell(),
+        ),
         GoRoute(
           path: login,
           builder: (context, state) => const LoginScreen(),
